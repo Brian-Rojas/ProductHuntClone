@@ -3,11 +3,22 @@ from django.contrib.auth.models import User
 from django.contrib import auth
 
 def login(request):
-    return render(request, 'accounts/login.html')
+    if request.method == 'POST':
+        user = auth.authenticate(username=request.POST['username'],password=request.POST['password'])
+        if user is not None:
+            auth.login(request, user)
+            return redirect('home')
+        else:
+            return render(request, 'accounts/login.html', {'error':'login credentials incorrect'})
+    else:
+        return render(request, 'accounts/login.html')
 
 
 def logout(request):
     # TODO add redirect to homepage and logout
+    if request.method == 'POST':
+        auth.logout(request)
+        return redirect('home')
     return render(request, 'accounts/signup.html')
 
 
